@@ -1,0 +1,23 @@
+# 100% Cotton Clothing Scraper - Dependencies
+
+# Web scraping
+playwright>=1.40.0
+beautifulsoup4>=4.12.0
+requests>=2.31.0
+aiohttp>=3.9.0
+
+# User agent rotation
+fake-useragent>=1.4.0
+
+# Data processing
+lxml>=4.9.0
+
+# Optional: For API integrations
+httpx>=0.25.0
+
+# Optional: For scheduled scraping
+schedule>=1.2.0
+
+# Optional: Database support (for later)
+# psycopg2-binary>=2.9.0
+# sqlalchemy>=2.0.0
