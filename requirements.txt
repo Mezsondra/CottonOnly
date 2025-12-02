@@ -12,6 +12,10 @@ fake-useragent>=1.4.0
 # Data processing
 lxml>=4.9.0
 
+# Web framework for frontend
+flask>=3.0.0
+flask-cors>=4.0.0
+
 # Optional: For API integrations
 httpx>=0.25.0
 
