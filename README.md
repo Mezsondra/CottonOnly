@@ -63,8 +63,14 @@ python main.py --retailer hm
 # Scrape specific genders
 python main.py --gender men women
 
+# Scrape multiple retailers concurrently (faster!)
+python main.py --region UK --retailer hm asos uniqlo --concurrent
+
 # Combine options
 python main.py --region USA --retailer hm asos --gender men
+
+# Show all configured retailers
+python show_retailers.py
 ```
 
 ### Command Line Options
@@ -76,6 +82,7 @@ python main.py --region USA --retailer hm asos --gender men
 | `--gender` / `-g` | Gender categories | All (men, women, kids) |
 | `--output` / `-o` | Output filename | all_products.json |
 | `--demo` | Quick demo mode | False |
+| `--concurrent` | Scrape multiple retailers in parallel | False |
 
 ## 📊 Output Format
 
@@ -109,23 +116,32 @@ Products are saved as JSON with the following structure:
 
 ## 🌍 Supported Retailers
 
-### UK Region
+### UK Region (9 retailers)
 | Retailer | Status | Notes |
 |----------|--------|-------|
-| H&M | ✅ Active | Full support |
-| ASOS | ✅ Active | Has material filter |
-| Uniqlo | 🔧 Generic | Basic support |
-| Next | 🔧 Generic | Basic support |
-| M&S | 🔧 Generic | Basic support |
+| H&M | ✅ Active | Full support with dedicated scraper |
+| ASOS | ✅ Active | Dedicated scraper with material filter |
+| Uniqlo | 🔧 Generic | Configurable generic scraper |
+| Next | 🔧 Generic | Configurable generic scraper |
+| Marks & Spencer | 🔧 Generic | Configurable generic scraper |
+| Zara | 🔧 Generic | Configurable generic scraper |
+| Primark | 🔧 Generic | Configurable generic scraper |
+| John Lewis | 🔧 Generic | Configurable generic scraper |
+| Debenhams | 🔧 Generic | Configurable generic scraper |
 
-### USA Region
+### USA Region (10 retailers)
 | Retailer | Status | Notes |
 |----------|--------|-------|
-| H&M | ✅ Active | Full support |
-| Uniqlo | 🔧 Generic | Basic support |
-| Gap | 🔧 Generic | Basic support |
-| Old Navy | 🔧 Generic | Basic support |
-| Target | 🔧 Generic | Basic support |
+| H&M | ✅ Active | Full support with dedicated scraper |
+| Uniqlo | 🔧 Generic | Configurable generic scraper |
+| Gap | 🔧 Generic | Configurable generic scraper |
+| Old Navy | 🔧 Generic | Configurable generic scraper |
+| Target | 🔧 Generic | Configurable generic scraper |
+| Zara | 🔧 Generic | Configurable generic scraper |
+| Macy's | 🔧 Generic | Configurable generic scraper |
+| Nordstrom | 🔧 Generic | Configurable generic scraper |
+| J.Crew | 🔧 Generic | Configurable generic scraper |
+| Banana Republic | 🔧 Generic | Configurable generic scraper |
 
 ## 🔧 Adding New Retailers
 
@@ -190,12 +206,30 @@ The scraper looks for these patterns to identify 100% cotton:
 
 Pattern matching is case-insensitive and handles various formatting.
 
+## ⚡ Performance Features
+
+### Concurrent Scraping
+The scraper now supports parallel execution for multiple retailers:
+
+```bash
+# Scrape multiple retailers at the same time (faster)
+python main.py --region UK --retailer hm asos uniqlo zara --concurrent
+```
+
+**Benefits:**
+- Significantly faster when scraping multiple retailers
+- Each retailer runs in parallel with its own browser instance
+- Ideal for scraping all retailers in a region
+
+**Note:** Concurrent mode uses more system resources (CPU, memory, network).
+
 ## ⚠️ Important Notes
 
 ### Rate Limiting
 - Default delay between requests: 2-3.5 seconds
 - Respects website rate limits
 - Use `--demo` mode for testing
+- Concurrent mode scrapes retailers in parallel but still respects per-retailer delays
 
 ### Legal Considerations
 - Only scrape public product information
@@ -229,9 +263,30 @@ for product in data['products']:
     pass
 ```
 
+## 🔍 Utility Scripts
+
+### Show Retailers
+View all configured retailers and their availability:
+
+```bash
+# Show all retailers
+python show_retailers.py
+
+# Show details for a specific retailer
+python show_retailers.py hm
+```
+
+This will display:
+- All configured retailers grouped by region
+- Base URLs for each region
+- Current availability status
+- Total retailer count
+
 ## 📈 Roadmap
 
-- [ ] Add more retailers (Primark, Zara, etc.)
+- [x] Add more retailers (Zara, Primark, John Lewis, etc.)
+- [x] Concurrent/parallel scraping support
+- [x] Enhanced generic scraper for broader compatibility
 - [ ] Scheduled scraping with cron
 - [ ] Price change tracking
 - [ ] Database integration (PostgreSQL)

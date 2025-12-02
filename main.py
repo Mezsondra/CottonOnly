@@ -54,16 +54,18 @@ async def scrape_retailer(
 async def scrape_region(
     region: str,
     retailers: List[str] = None,
-    genders: List[str] = None
+    genders: List[str] = None,
+    concurrent: bool = False
 ) -> List[Dict[str, Any]]:
     """
     Scrape all retailers for a region
-    
+
     Args:
         region: Region code (UK, USA)
         retailers: List of retailers to scrape (None = all)
         genders: List of genders to scrape (None = all)
-        
+        concurrent: Whether to scrape retailers concurrently (default: False)
+
     Returns:
         List of all scraped products
     """
@@ -71,13 +73,13 @@ async def scrape_region(
     if not region_config:
         print(f"Unknown region: {region}")
         return []
-    
+
     if retailers is None:
         retailers = region_config["retailers"]
-    
+
     if genders is None:
         genders = ["men", "women", "kids"]
-    
+
     # Filter retailers to only those available in the region
     available_retailers = []
     for r in retailers:
@@ -87,25 +89,52 @@ async def scrape_region(
                 available_retailers.append(r)
             else:
                 print(f"Skipping {r} - not available in {region}")
-    
+
     all_products = []
-    
+
     print(f"\n{'#'*60}")
     print(f"# Scraping {region} Region")
     print(f"# Retailers: {', '.join(available_retailers)}")
     print(f"# Genders: {', '.join(genders)}")
+    print(f"# Mode: {'Concurrent' if concurrent else 'Sequential'}")
     print(f"{'#'*60}")
-    
-    for retailer in available_retailers:
-        products = await scrape_retailer(retailer, region, genders)
-        all_products.extend(products)
-        
-        # Save intermediate results
-        if products:
-            filename = f"{retailer}_{region.lower()}_{datetime.now().strftime('%Y%m%d')}.json"
-            save_products_json(products, filename)
-            print(f"Saved {len(products)} products to data/{filename}")
-    
+
+    if concurrent and len(available_retailers) > 1:
+        # Scrape all retailers concurrently
+        print(f"\nScraping {len(available_retailers)} retailers in parallel...")
+
+        tasks = [
+            scrape_retailer(retailer, region, genders)
+            for retailer in available_retailers
+        ]
+
+        results = await asyncio.gather(*tasks, return_exceptions=True)
+
+        for retailer, result in zip(available_retailers, results):
+            if isinstance(result, Exception):
+                print(f"\nError scraping {retailer}: {str(result)}")
+                continue
+
+            products = result
+            all_products.extend(products)
+
+            # Save intermediate results
+            if products:
+                filename = f"{retailer}_{region.lower()}_{datetime.now().strftime('%Y%m%d')}.json"
+                save_products_json(products, filename)
+                print(f"\nSaved {len(products)} products from {retailer} to data/{filename}")
+    else:
+        # Sequential scraping (original behavior)
+        for retailer in available_retailers:
+            products = await scrape_retailer(retailer, region, genders)
+            all_products.extend(products)
+
+            # Save intermediate results
+            if products:
+                filename = f"{retailer}_{region.lower()}_{datetime.now().strftime('%Y%m%d')}.json"
+                save_products_json(products, filename)
+                print(f"Saved {len(products)} products to data/{filename}")
+
     return all_products
 
 
@@ -147,7 +176,13 @@ async def main():
         action='store_true',
         help='Run in demo mode (fewer products)'
     )
-    
+
+    parser.add_argument(
+        '--concurrent',
+        action='store_true',
+        help='Scrape multiple retailers concurrently (faster but more resource intensive)'
+    )
+
     args = parser.parse_args()
     
     print("\n" + "="*60)
@@ -163,7 +198,8 @@ async def main():
         products = await scrape_region(
             region=region,
             retailers=args.retailer,
-            genders=args.gender
+            genders=args.gender,
+            concurrent=args.concurrent
         )
         all_products.extend(products)
     
