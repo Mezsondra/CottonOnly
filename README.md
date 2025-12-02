@@ -45,7 +45,27 @@ pip install -r requirements.txt
 playwright install chromium
 ```
 
-### Basic Usage
+### Web Interface (Recommended) 🌐
+
+The easiest way to use the scraper is through the web interface:
+
+```bash
+# Start the web application
+python app.py
+
+# Open your browser to:
+# http://localhost:5000
+```
+
+**Features:**
+- 🎨 Beautiful, responsive UI
+- 📊 Real-time scraping progress
+- 🔍 Search and filter products
+- 📥 Download results as JSON
+- 📈 View scraping history
+- 🚀 Multi-retailer concurrent scraping
+
+### Command Line Usage
 
 ```bash
 # Run demo (quick test with H&M UK)

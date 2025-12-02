@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>100% Cotton Clothing Finder</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1>🧵 100% Cotton Clothing Finder</h1>
+                <p class="tagline">Discover pure cotton clothing from top retailers</p>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Control Panel -->
+            <section class="control-panel" id="controlPanel">
+                <h2>Start Scraping</h2>
+
+                <div class="form-group">
+                    <label for="regionSelect">Region:</label>
+                    <select id="regionSelect" class="form-control">
+                        <option value="UK">United Kingdom (£)</option>
+                        <option value="USA">United States ($)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Retailers:</label>
+                    <div id="retailersList" class="checkbox-group">
+                        <!-- Dynamically populated -->
+                    </div>
+                    <button class="btn-link" onclick="selectAllRetailers()">Select All</button>
+                    <button class="btn-link" onclick="deselectAllRetailers()">Deselect All</button>
+                </div>
+
+                <div class="form-group">
+                    <label>Genders:</label>
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" value="men" checked class="gender-checkbox">
+                            <span>Men</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" value="women" checked class="gender-checkbox">
+                            <span>Women</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" value="kids" checked class="gender-checkbox">
+                            <span>Kids</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button id="startBtn" class="btn btn-primary" onclick="startScraping()">
+                        Start Scraping
+                    </button>
+                    <button id="stopBtn" class="btn btn-danger" onclick="stopScraping()" style="display: none;">
+                        Stop Scraping
+                    </button>
+                </div>
+
+                <!-- Progress Section -->
+                <div id="progressSection" class="progress-section" style="display: none;">
+                    <h3>Scraping Progress</h3>
+                    <div class="progress-bar-container">
+                        <div id="progressBar" class="progress-bar"></div>
+                    </div>
+                    <p id="progressText" class="progress-text">Initializing...</p>
+
+                    <div class="log-container">
+                        <h4>Activity Log</h4>
+                        <div id="activityLog" class="activity-log"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Products Section -->
+            <section class="products-section">
+                <div class="products-header">
+                    <h2>Products (<span id="productCount">0</span>)</h2>
+
+                    <div class="products-controls">
+                        <input type="text" id="searchBox" class="search-box" placeholder="Search products...">
+
+                        <select id="sortSelect" class="form-control-sm">
+                            <option value="name">Sort by Name</option>
+                            <option value="price-low">Price: Low to High</option>
+                            <option value="price-high">Price: High to Low</option>
+                            <option value="retailer">Retailer</option>
+                        </select>
+
+                        <select id="filterGender" class="form-control-sm">
+                            <option value="">All Genders</option>
+                            <option value="men">Men</option>
+                            <option value="women">Women</option>
+                            <option value="kids">Kids</option>
+                        </select>
+
+                        <select id="filterRetailer" class="form-control-sm">
+                            <option value="">All Retailers</option>
+                            <!-- Dynamically populated -->
+                        </select>
+
+                        <button class="btn btn-sm btn-secondary" onclick="loadProducts()">
+                            Refresh
+                        </button>
+
+                        <button class="btn btn-sm btn-secondary" onclick="showFiles()">
+                            Files
+                        </button>
+                    </div>
+                </div>
+
+                <div id="productsGrid" class="products-grid">
+                    <div class="empty-state">
+                        <p>No products yet. Start scraping to see results!</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Files Modal -->
+        <div id="filesModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Saved Files</h2>
+                    <button class="modal-close" onclick="closeFilesModal()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div id="filesList"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
